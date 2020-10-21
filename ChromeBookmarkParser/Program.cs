@@ -13,10 +13,11 @@ namespace ChromeBookmarkParser
         {
             var downloadFolderPath = Path.Combine(Environment.GetEnvironmentVariable("USERPROFILE"), @"Downloads");
             var bookmarks = Directory.EnumerateFiles(downloadFolderPath, "bookmarks_*.html");
-            if (bookmarks.Count() != 1)
+            var bookmarksCounts = bookmarks.Count();
+            if (bookmarksCounts != 1)
             {
                 Console.WriteLine($"ERROR: {bookmarks.Count()} possible files found");
-                Console.WriteLine("Please ensure there is only one possible find and try again");
+                Console.WriteLine($"Please ensure there is {(bookmarksCounts == 0 ? "" : "only ")}one possible file and try again");
             }
             else
             {
