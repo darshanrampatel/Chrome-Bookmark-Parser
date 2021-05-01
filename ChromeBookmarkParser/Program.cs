@@ -1,4 +1,5 @@
 ﻿using HtmlAgilityPack;
+using Syroot.Windows.IO;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,7 +12,7 @@ namespace ChromeBookmarkParser
     {
         static void Main()
         {
-            var downloadFolderPath = Path.Combine(Environment.GetEnvironmentVariable("USERPROFILE"), @"Downloads");
+            var downloadFolderPath = new KnownFolder(KnownFolderType.Downloads).Path;
             var bookmarks = Directory.EnumerateFiles(downloadFolderPath, "bookmarks_*.html");
             var bookmarksCounts = bookmarks.Count();
             if (bookmarksCounts != 1)
