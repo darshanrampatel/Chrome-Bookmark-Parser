@@ -18,7 +18,8 @@ class Program
         if (bookmarks.Count != 1)
         {
             Console.WriteLine($"{bookmarks.Count} possible files found");
-            Console.WriteLine($"Using latest file based on name: {bookmarkFile}");
+            Console.WriteLine($"Using most-recent file: {bookmarkFile}");
+            Console.WriteLine();
         }
         var regex = new Regex(@"(\d{4})");
         var filmsList = new List<string>();
