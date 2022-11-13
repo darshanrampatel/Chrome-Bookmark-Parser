@@ -2,6 +2,7 @@
 using Syroot.Windows.IO;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -13,7 +14,17 @@ class Program
     static void Main()
     {
         var downloadFolderPath = new KnownFolder(KnownFolderType.Downloads).Path;
-        var bookmarks = Directory.EnumerateFiles(downloadFolderPath, "bookmarks_*.html").OrderByDescending(f => f).ToList();
+        var bookmarks_ = "bookmarks_";
+        var possibleBookmarkFiles = Directory.EnumerateFiles(downloadFolderPath, $"{bookmarks_}*.html");       
+        var bookmarks = possibleBookmarkFiles.OrderByDescending(f =>
+        {
+            var fileName = Path.GetFileNameWithoutExtension(f);
+            if (DateTime.TryParseExact(fileName[bookmarks_.Length..], "d_MM_yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var fromDt))
+            {
+                return fromDt;
+            }
+            return default; // Files with invalid dates will be sorted last
+        }).ToList();       
         var bookmarkFile = bookmarks.FirstOrDefault();
         if (bookmarks.Count != 1)
         {
