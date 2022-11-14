@@ -84,6 +84,7 @@ class Program
         Console.WriteLine($"Reading {filmsList.Count} films");
 
         var years = new Dictionary<int, List<string>>();
+        var unscheduledFilms = new List<string>();
         foreach (var line in filmsList)
         {
             var dateFound = regex.Match(line.Trim());
@@ -97,14 +98,20 @@ class Program
             }
             else
             {
-                Console.WriteLine($"Ignoring: {line}");
+                unscheduledFilms.Add(line);
             }
         }
         foreach (var year in years.OrderBy(y => y.Key))
         {
             Console.WriteLine();
-            Console.WriteLine($"---{year.Key}---");
+            Console.WriteLine($"---------{year.Key}---------");
             Console.WriteLine($"{string.Join(Environment.NewLine, year.Value.OrderBy(f => f).Select(f => f))}");
+        }
+        if (unscheduledFilms.Count > 0)
+        {
+            Console.WriteLine();
+            Console.WriteLine($"---UnscheduledFilms---");
+            Console.WriteLine($"{string.Join(Environment.NewLine, unscheduledFilms.OrderBy(f => f).Select(f => f))}");
         }
 
         //Console.WriteLine();
