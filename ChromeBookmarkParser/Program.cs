@@ -15,7 +15,7 @@ class Program
     {
         var downloadFolderPath = new KnownFolder(KnownFolderType.Downloads).Path;
         var bookmarks_ = "bookmarks_";
-        var possibleBookmarkFiles = Directory.EnumerateFiles(downloadFolderPath, $"{bookmarks_}*.html");       
+        var possibleBookmarkFiles = Directory.EnumerateFiles(downloadFolderPath, $"{bookmarks_}*.html");
         var bookmarks = possibleBookmarkFiles.OrderByDescending(f =>
         {
             var fileName = Path.GetFileNameWithoutExtension(f);
@@ -24,7 +24,7 @@ class Program
                 return fromDt;
             }
             return default; // Files with invalid dates will be sorted last
-        }).ToList();       
+        }).ToList();
         var bookmarkFile = bookmarks.FirstOrDefault();
         if (bookmarks.Count != 1)
         {
@@ -101,17 +101,35 @@ class Program
                 unscheduledFilms.Add(line);
             }
         }
-        foreach (var year in years.OrderBy(y => y.Key))
+        var duplicateFilms = years.SelectMany(y => y.Value).GroupBy(f => f).Where(g => g.Count() > 1).Select(g => g.Key);
+        if (duplicateFilms.Any())
         {
-            Console.WriteLine();
-            Console.WriteLine($"---------{year.Key}---------");
-            Console.WriteLine($"{string.Join(Environment.NewLine, year.Value.OrderBy(f => f).Select(f => f))}");
+            Console.WriteLine($"{nameof(years)} contains duplicates!");
+            Console.WriteLine($"{string.Join(Environment.NewLine, duplicateFilms.OrderBy(f => f))}");
+        }
+        else
+        {
+            foreach (var year in years.OrderBy(y => y.Key))
+            {
+                Console.WriteLine();
+                Console.WriteLine($"---------{year.Key}---------");
+                Console.WriteLine($"{string.Join(Environment.NewLine, year.Value.OrderBy(f => f).Select(f => f))}");
+            }
         }
         if (unscheduledFilms.Count > 0)
         {
             Console.WriteLine();
             Console.WriteLine($"---UnscheduledFilms---");
-            Console.WriteLine($"{string.Join(Environment.NewLine, unscheduledFilms.OrderBy(f => f).Select(f => f))}");
+            var duplicateUnscheduledFilms = unscheduledFilms.GroupBy(f => f).Where(g => g.Count() > 1).Select(g => g.Key);
+            if (duplicateUnscheduledFilms.Any())
+            {
+                Console.WriteLine($"{nameof(unscheduledFilms)} contains duplicates!");
+                Console.WriteLine($"{string.Join(Environment.NewLine, duplicateUnscheduledFilms.OrderBy(f => f))}");
+            }
+            else
+            {
+                Console.WriteLine($"{string.Join(Environment.NewLine, unscheduledFilms.OrderBy(f => f).Select(f => f))}");
+            }
         }
 
         //Console.WriteLine();
