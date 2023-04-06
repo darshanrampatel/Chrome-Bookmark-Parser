@@ -13,7 +13,7 @@ class Program
 {
     static void Main()
     {
-        var folderPath = new KnownFolder(KnownFolderType.Downloads).Path;
+        var folderPath = new KnownFolder(KnownFolderType.Documents).Path;
         var bookmarks_ = "bookmarks_";
         var possibleBookmarkFiles = Directory.EnumerateFiles(folderPath, $"{bookmarks_}*.html");
         var bookmarks = possibleBookmarkFiles.OrderByDescending(f =>
