@@ -29,6 +29,11 @@ class Program
         if (bookmarks.Count != 1)
         {
             Console.WriteLine($"{bookmarks.Count} possible files found");
+            if (bookmarkFile == default)
+            {
+                Console.WriteLine($"Could not find a suitable file in {downloadFolderPath}");
+                return;
+            }
             Console.WriteLine($"Using most-recent file: {bookmarkFile}");
             Console.WriteLine();
         }
