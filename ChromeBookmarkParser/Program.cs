@@ -13,9 +13,9 @@ class Program
 {
     static void Main()
     {
-        var downloadFolderPath = new KnownFolder(KnownFolderType.Downloads).Path;
+        var folderPath = new KnownFolder(KnownFolderType.Downloads).Path;
         var bookmarks_ = "bookmarks_";
-        var possibleBookmarkFiles = Directory.EnumerateFiles(downloadFolderPath, $"{bookmarks_}*.html");
+        var possibleBookmarkFiles = Directory.EnumerateFiles(folderPath, $"{bookmarks_}*.html");
         var bookmarks = possibleBookmarkFiles.OrderByDescending(f =>
         {
             var fileName = Path.GetFileNameWithoutExtension(f);
@@ -31,7 +31,7 @@ class Program
             Console.WriteLine($"{bookmarks.Count} possible files found");
             if (bookmarkFile == default)
             {
-                Console.WriteLine($"Could not find a suitable file in {downloadFolderPath}");
+                Console.WriteLine($"Could not find a suitable file in {folderPath}");
                 return;
             }
             Console.WriteLine($"Using most-recent file: {bookmarkFile}");
