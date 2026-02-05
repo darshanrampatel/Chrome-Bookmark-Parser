@@ -42,48 +42,56 @@ class Program
         var booksList = new List<string>();
         var doc = new HtmlDocument();
         doc.Load(bookmarkFile);
-        var sn = doc.DocumentNode.LastChild.PreviousSibling;
-        var t = sn.Descendants();
-        var seenFilms = false;
-        var seenBooks = false;
-        foreach (var i in t)
-        {
-            if (i.Name == "dt")
-            {
-                var childNodes = i.ChildNodes;
-                var h3 = childNodes.FindFirst("H3");
-                if (h3?.InnerText == "Bookmarks bar")
-                {
-                    var cnFilms = h3.NextSibling.NextSibling.LastChild.LastChild.LastChild.LastChild.LastChild.LastChild.ChildNodes;
-                    if (!seenFilms && cnFilms.First().InnerText == "Films")
-                    {
-                        var f = cnFilms.FindFirst("p").LastChild.LastChild.ChildNodes;
-                        foreach (var film in f)
-                        {
-                            if (film.Name == "dt")
-                            {
-                                filmsList.Add(System.Net.WebUtility.HtmlDecode(film.FirstChild.InnerText));
-                            }
-                        }
-                        seenFilms = true;
-                    }
-                }
 
-                var cnBooks = h3?.NextSibling.NextSibling.LastChild.LastChild.ChildNodes;
-                if (!seenBooks && cnBooks.First().InnerText == "Books")
-                {
-                    var b = cnBooks.FindFirst("p").LastChild.LastChild.ChildNodes;
-                    foreach (var book in b)
-                    {
-                        if (book.Name == "dt")
-                        {
-                            booksList.Add(System.Net.WebUtility.HtmlDecode(book.FirstChild.InnerText));
-                        }
-                    }
-                    seenBooks = true;
-                }
+        // Find the "Films" folder using XPath - much more robust than chained navigation
+        var filmsFolder = doc.DocumentNode.SelectSingleNode("//h3[text()='Films']");
+        if (filmsFolder != null)
+        {
+            // The <DL> containing the bookmarks is the next sibling element after the H3
+            var filmsDl = filmsFolder.NextSibling;
+            while (filmsDl != null && filmsDl.Name != "dl")
+            {
+                filmsDl = filmsDl.NextSibling;
             }
 
+            if (filmsDl != null)
+            {
+                var filmLinks = filmsDl.SelectNodes(".//dt/a");
+                if (filmLinks != null)
+                {
+                    foreach (var film in filmLinks)
+                    {
+                        filmsList.Add(System.Net.WebUtility.HtmlDecode(film.InnerText));
+                    }
+                }
+            }
+        }
+        else
+        {
+            Console.WriteLine("Could not find 'Films' folder in bookmarks");
+        }
+
+        // Find the "Books" folder using XPath
+        var booksFolder = doc.DocumentNode.SelectSingleNode("//h3[text()='Books']");
+        if (booksFolder != null)
+        {
+            var booksDl = booksFolder.NextSibling;
+            while (booksDl != null && booksDl.Name != "dl")
+            {
+                booksDl = booksDl.NextSibling;
+            }
+
+            if (booksDl != null)
+            {
+                var bookLinks = booksDl.SelectNodes(".//dt/a");
+                if (bookLinks != null)
+                {
+                    foreach (var book in bookLinks)
+                    {
+                        booksList.Add(System.Net.WebUtility.HtmlDecode(book.InnerText));
+                    }
+                }
+            }
         }
 
         Console.WriteLine($"Reading {filmsList.Count} films");
